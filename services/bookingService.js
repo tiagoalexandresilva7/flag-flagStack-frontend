@@ -26,6 +26,41 @@ async function getBookingsByUserId(user) {
     return result;
 }
 
+function getTotalPrice(
+    pricePerNight,
+    pricePerGuest,
+    checkIn,
+    checkOut,
+    numberOfGuests
+) {
+    const dayInMiliseconds = 24 * 60 * 60 * 1000;
+    const numberOfNights = Math.ceil((checkOut - checkIn) / dayInMiliseconds);
+
+    const totalGuestsPrice = pricePerGuest * numberOfGuests;
+    const totalNightsPrice = pricePerNight * numberOfNights;
+
+    const total = totalGuestsPrice + totalNightsPrice;
+
+    return total;
+}
+
+async function postBooking(user, bookingData) {
+    const options = {
+        method: 'POST',
+        body: JSON.stringify(bookingData),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+            Authorization: `Bearer ${user.token}`,
+        },
+    };
+
+    const url = 'http://localhost:3000/bookings';
+    const response = await fetch(url, options);
+    const result = await response.json();
+
+    return result
+}
+
 async function putBooking(user, bookingData) {
     const { _id, ...updatedBookingData } = bookingData;
 
@@ -45,27 +80,10 @@ async function putBooking(user, bookingData) {
     return result;
 }
 
-function getTotalPrice(
-    pricePerNight,
-    pricePerGuest,
-    checkIn,
-    checkOut,
-    numberOfGuests
-) {
-    const dayInMiliseconds = 24 * 60 * 60 * 1000;
-    const numberOfNights = Math.ceil((checkOut - checkIn) / dayInMiliseconds);
-
-    const totalGuestsPrice = pricePerGuest * numberOfGuests;
-    const totalNightsPrice = pricePerNight * numberOfNights;
-
-    const total = totalGuestsPrice + totalNightsPrice;
-
-    return total;
-}
-
 export default {
     getBookingById,
     getBookingsByUserId,
-    putBooking,
     getTotalPrice,
+    postBooking,
+    putBooking,
 };

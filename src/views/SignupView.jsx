@@ -1,72 +1,78 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 
+import userService from '../../services/userService';
+import InfoModal from '../components/ui/InfoModal';
+import authService from '../../services/authService';
+import SignupForm from '../components/pages/Signup/SignupForm';
+import SignupHeading from '../components/pages/Signup/SignupHeading';
+import SignupAlreadyHasAccount from '../components/pages/Signup/SignupAlreadyHasAccount';
+
 function SignupView() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [signupFormData, setSignupFormData] = useState({
+        role: 'User',
+    });
+
+    const [infoModalText, setInfoModalText] = useState();
+
     const [location, setLocation] = useLocation();
 
     async function signupHandler(event) {
         event.preventDefault();
 
-        const body = {
-            email: email,
-            password: password,
-            role: "User"
-        };
+        if (signupFormData.password !== signupFormData.confirmPassword) {
+            setInfoModalText({
+                title: 'Something went wrong!',
+                message: 'Both password fields must be the same!',
+            });
 
-        const options = {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8',
-            },
-        };
-
-        const url = 'http://localhost:3000/users';
-        const response = await fetch(url, options);
-        const result = await response.json();
-
-        console.log(result);
-
-        if (result.createdAt) {
-            setLocation('/login');
+            return;
         }
 
-        // todo auto login, set the token and redirect to homepage
-        // confirm password field
+        const response = await userService.postUser(signupFormData);
 
+        if (response.message) {
+            setInfoModalText({
+                title: 'Something went wrong!',
+                message: response.message,
+            });
+
+            return;
+        }
+
+        const login = await authService.loginUser(signupFormData);
+
+        authService.setUserToken(login);
+
+        setInfoModalText({
+            title: 'Account created successfully!',
+            message: 'Redirecting to the homepage shortly...',
+        });
+
+        setTimeout(() => {
+            setLocation('/');
+        }, 3000);
     }
 
     return (
         <>
+            {infoModalText && (
+                <InfoModal
+                    infoModalText={infoModalText}
+                    setInfoModalText={setInfoModalText}
+                />
+            )}
+
             <main className="container min-h-screen">
-                <h1 className="text-center">Create Account</h1>
-                <section className="flex justify-center">
-                    <form onSubmit={signupHandler}>
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Email"
-                            aria-label="Login"
-                            autoComplete="email"
-                            required
-                            onChange={(event) => setEmail(event.target.value)}
-                        />
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            aria-label="Password"
-                            autoComplete="current-password"
-                            required
-                            onChange={(event) =>
-                                setPassword(event.target.value)
-                            }
-                        />
-                        <button type="submit">Create Account</button>
-                    </form>
-                </section>
+                <SignupHeading />
+
+                <SignupForm
+                    signupFormData={signupFormData}
+                    setSignupFormData={setSignupFormData}
+                    signupHandler={signupHandler}
+                />
+
+                <SignupAlreadyHasAccount />
             </main>
         </>
     );

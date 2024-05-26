@@ -1,7 +1,7 @@
 import { Route, Switch } from 'wouter';
 
-import Footer from './components/Footer';
-import Navbar from './components/Navbar';
+import Footer from './components/layout/Footer';
+import Navbar from './components/layout/Navbar';
 
 import HomepageView from './views/HomepageView';
 import HotelView from './views/HotelView';
@@ -10,7 +10,7 @@ import BookSuccessView from './views/BookSuccessView';
 import LoginView from './views/LoginView';
 import SignupView from './views/SignupView';
 import SearchHotelsView from './views/SearchHotelsView';
-import ReViewS from './views/ReViewS';
+import ReviewsView from './views/ReviewsView';
 import ProfileView from './views/ProfileView';
 
 function App() {
@@ -33,7 +33,7 @@ function App() {
                 <Route path="/login" component={LoginView} />
                 <Route path="/signup" component={SignupView} />
                 <Route path="/search" component={SearchHotelsView} />
-                <Route path="/reviews" component={ReViewS} />
+                <Route path="/reviews" component={ReviewsView} />
                 <Route path="/myProfile" component={ProfileView} />
             </Switch>
             <Footer />

@@ -1,25 +1,33 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 
+import authService from '../../services/authService';
+import hotelService from '../../services/hotelService';
+import bookingService from '../../services/bookingService';
+
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import BookForm from '../components/pages/Book/BookForm';
+import BookHeading from '../components/pages/Book/BookHeading';
+
 function BookView({ hotelId }) {
     const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState();
-    const [hotel, setHotel] = useState();
-    
-    const dayInMiliseconds = 24 * 60 * 60 * 1000;
-    const [checkIn, setCheckIn] = useState(new Date());
-    const [checkOut, setCheckOut] = useState(
-        new Date(checkIn.getTime() + dayInMiliseconds)
-    );
-
-    const [numberOfGuests, setNumberOfGuests] = useState(1);
-    const [numberOfNights, setNumberOfNights] = useState();
-    const [totalPrice, setTotalPrice] = useState();
-
     const [location, setLocation] = useLocation();
 
+    const [user, setUser] = useState();
+    const [hotel, setHotel] = useState();
+
+    const dayInMilliseconds = 24 * 60 * 60 * 1000;
+
+    const [bookFormData, setBookFormData] = useState({
+        checkIn: new Date(),
+        checkOut: new Date(new Date().getTime() + dayInMilliseconds),
+        numberOfGuests: 1,
+        numberOfNights: 1,
+        pricePaid: 0,
+    });
+
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = authService.getUserToken();
 
         if (!user) {
             setLocation('/login');
@@ -31,13 +39,12 @@ function BookView({ hotelId }) {
 
     useEffect(() => {
         (async () => {
-            const url = `http://localhost:3000/hotels/${hotelId}`;
-            const response = await fetch(url);
-            const result = await response.json();
-            setHotel(result);
+            const hotel = await hotelService.getHotelById(hotelId);
+            setHotel(hotel);
+
             setIsLoading(false);
         })();
-    }, []);
+    }, [hotelId]);
 
     function inputHandler(event) {
         if (event.target.name === 'checkIn') {
@@ -45,15 +52,21 @@ function BookView({ hotelId }) {
                 return;
             }
 
-            setCheckIn(new Date(event.target.value));
+            setBookFormData({
+                ...bookFormData,
+                [event.target.name]: new Date(event.target.value),
+            });
         }
 
         if (event.target.name === 'checkOut') {
-            if (new Date(event.target.value) < checkIn) {
+            if (new Date(event.target.value) < bookFormData.checkIn) {
                 return;
             }
 
-            setCheckOut(new Date(event.target.value));
+            setBookFormData({
+                ...bookFormData,
+                [event.target.name]: new Date(event.target.value),
+            });
         }
 
         if (event.target.name === 'numberOfGuests') {
@@ -61,52 +74,62 @@ function BookView({ hotelId }) {
                 return;
             }
 
-            setNumberOfGuests(event.target.value);
+            setBookFormData({
+                ...bookFormData,
+                [event.target.name]: event.target.value,
+            });
         }
     }
 
     useEffect(() => {
-        const totalNights = Math.ceil((checkOut - checkIn) / dayInMiliseconds);
+        const checkInDate = new Date(bookFormData.checkIn);
+        const checkOutDate = new Date(bookFormData.checkOut);
 
-        setNumberOfNights(totalNights > 1 ? totalNights : 1);
-    }, [checkIn, checkOut]);
+        const difference = checkOutDate.getTime() - checkInDate.getTime();
+
+        const numberOfNights = Math.ceil(difference / dayInMilliseconds);
+
+        setBookFormData({
+            ...bookFormData,
+            numberOfNights: numberOfNights,
+        });
+    }, [bookFormData.checkIn, bookFormData.checkOut]);
 
     useEffect(() => {
-        const totalGuestsPrice = hotel?.pricePerGuest * numberOfGuests;
-        const totalNightsPrice = hotel?.pricePerNight * numberOfNights;
+        if (!hotel) {
+            return;
+        }
 
-        const total = totalGuestsPrice + totalNightsPrice;
+        const { pricePerNight, pricePerGuest } = hotel;
+        const { checkIn, checkOut, numberOfGuests } = bookFormData;
 
-        setTotalPrice(total);
-    }, [hotel, numberOfGuests, numberOfNights]);
+        const total = bookingService.getTotalPrice(
+            pricePerNight,
+            pricePerGuest,
+            checkIn,
+            checkOut,
+            numberOfGuests
+        );
+
+        setBookFormData({
+            ...bookFormData,
+            pricePaid: total,
+        });
+    }, [hotel, bookFormData.numberOfGuests, bookFormData.numberOfNights]);
 
     async function submitHandler(event) {
         event.preventDefault();
 
-        const body = {
-            pricePaid: totalPrice,
-            numberOfGuests: numberOfGuests,
-            checkIn: checkIn.toISOString().slice(0, 10),
-            checkOut: checkOut.toISOString().slice(0, 10),
+        const bookingData = {
+            ...bookFormData,
+            checkIn: bookFormData.checkIn.toISOString().slice(0, 10),
+            checkOut: bookFormData.checkOut.toISOString().slice(0, 10),
             status: 'Pending',
             byUser: user.id,
             onHotel: hotelId,
         };
 
-        const options = {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8',
-                Authorization: `Bearer ${user.token}`,
-            },
-        };
-
-        const url = 'http://localhost:3000/bookings';
-        const response = await fetch(url, options);
-        const result = await response.json();
-
-        console.log(result);
+        const result = await bookingService.postBooking(user, bookingData);
 
         if (result) {
             setLocation(`/book/success/${result._id}`);
@@ -114,73 +137,17 @@ function BookView({ hotelId }) {
     }
 
     if (isLoading) {
-        return (
-            <section className="container min-h-screen flex flex-col place-content-center">
-                <section aria-busy="true"></section>
-                <h2 className="text-center mt-8">Loading...</h2>
-            </section>
-        );
+        return <LoadingSpinner />;
     } else {
         return (
             <main className="container min-h-screen">
-                <hgroup className="text-center">
-                    <h1>Booking on {hotel?.name}</h1>
-                    <p>Please fill in the form</p>
-                </hgroup>
-                <section className="flex justify-center">
-                    <form onSubmit={submitHandler} className="w-96">
-                        <label>
-                            Check-in
-                            <input
-                                type="date"
-                                onChange={(event) => inputHandler(event)}
-                                value={checkIn.toISOString().slice(0, 10)}
-                                name="checkIn"
-                                aria-label="Date"
-                            />
-                        </label>
-                        <label>
-                            Check-out
-                            <input
-                                type="date"
-                                onChange={(event) => inputHandler(event)}
-                                value={checkOut.toISOString().slice(0, 10)}
-                                name="checkOut"
-                                aria-label="Date"
-                                required
-                            />
-                            <small className="text-center font-bold">
-                                Nights: {numberOfNights}
-                            </small>
-                        </label>
-                        <label>
-                            Guests
-                            <input
-                                type="number"
-                                onChange={(event) => inputHandler(event)}
-                                value={numberOfGuests}
-                                name="numberOfGuests"
-                                aria-label="Guests"
-                                required
-                            />
-                        </label>
-                        <section className="flex place-content-center mt-4 text-4xl">
-                            <p>Total: {totalPrice}€</p>
-                        </section>
-                        <label>
-                            <input
-                                name="terms"
-                                type="checkbox"
-                                role="switch"
-                                required
-                            />
-                            I agree to the Terms and Conditions
-                        </label>
-                        <button type="submit" className="mt-8">
-                            Book
-                        </button>
-                    </form>
-                </section>
+                <BookHeading hotelName={hotel.name} />
+
+                <BookForm
+                    submitHandler={submitHandler}
+                    inputHandler={inputHandler}
+                    bookFormData={bookFormData}
+                />
             </main>
         );
     }

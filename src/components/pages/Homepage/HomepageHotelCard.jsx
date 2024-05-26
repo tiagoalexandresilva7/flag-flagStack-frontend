@@ -1,23 +1,23 @@
 import { Link } from 'wouter';
 
-function Card({ id, name, city, price, poster }) {
+function HomepageHotelCard({ hotel }) {
     return (
         <article>
             <header>
                 <figure>
-                    <img src={poster} alt={name} />
+                    <img src={hotel.photos[0]} alt={hotel.name} />
                 </figure>
             </header>
             <section className="h-48">
-                <h2>{name}</h2>
-                <h5>{city}</h5>
+                <h2>{hotel.name}</h2>
+                <h5>{hotel.city}</h5>
                 <p>
-                    <span className="font-bold">{price}€</span> /{' '}
+                    <span className="font-bold">{hotel.pricePerNight}€</span> /{' '}
                     <span className="italic">night</span>
                 </p>
             </section>
             <footer>
-                <Link to={`/hotel/${id}`}>
+                <Link to={`/hotel/${hotel._id}`}>
                     <button>Go to Hotel</button>
                 </Link>
             </footer>
@@ -25,4 +25,4 @@ function Card({ id, name, city, price, poster }) {
     );
 }
 
-export default Card;
+export default HomepageHotelCard;

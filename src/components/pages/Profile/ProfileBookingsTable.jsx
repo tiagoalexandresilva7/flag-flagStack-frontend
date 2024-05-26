@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import EditBooking from './EditBooking';
+import EditBooking from '../../profile/bookings/EditBooking';
 
-function Bookings({ user, bookings }) {
+function ProfileBookingsTable({ user, bookings }) {
     const [showEditBooking, setShowEditBooking] = useState(false);
     return (
         <>
@@ -31,7 +31,6 @@ function Bookings({ user, bookings }) {
                                     <td>{booking.checkOut.slice(0, 10)}</td>
                                     <td>{booking.pricePaid}€</td>
                                     <td>{booking.status}</td>
-                                    <td>{booking._id}</td>
                                     <td className="flex gap-2 place-content-center">
                                         <button
                                             onClick={() => {
@@ -40,14 +39,14 @@ function Bookings({ user, bookings }) {
                                                 );
                                             }}
                                         >
+                                            {showEditBooking && (
+                                                <EditBooking
+                                                    user={user}
+                                                    booking={booking}
+                                                />
+                                            )}
                                             <i className="fa-solid fa-pen text-white"></i>
                                         </button>
-                                        {showEditBooking && (
-                                            <EditBooking
-                                                user={user}
-                                                bookingId={booking._id}
-                                            />
-                                        )}
                                         <button>
                                             <i className="fa-solid fa-xmark text-white"></i>
                                         </button>
@@ -61,4 +60,4 @@ function Bookings({ user, bookings }) {
     );
 }
 
-export default Bookings;
+export default ProfileBookingsTable;

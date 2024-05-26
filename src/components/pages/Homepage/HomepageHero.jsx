@@ -1,6 +1,6 @@
 import { Link } from 'wouter';
 
-function Hero() {
+function HomepageHero() {
     return (
         <section>
             <div className="min-h-screen bg-[url('/hero.jpg')] bg-cover flex flex-row items-center justify-center">
@@ -27,4 +27,4 @@ function Hero() {
     );
 }
 
-export default Hero;
+export default HomepageHero;

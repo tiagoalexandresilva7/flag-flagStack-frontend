@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
+import authService from '../../../services/authService';
 
 function Navbar() {
     const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = authService.getUserToken();
 
         if (!user) {
             return;
@@ -37,9 +38,6 @@ function Navbar() {
                     </li>
                     <li>
                         <Link to="/reviews">Reviews</Link>
-                    </li>
-                    <li>
-                        <Link to="/">Help</Link>
                     </li>
                     <li>
                         <Link to={isUserLoggedIn ? '/myProfile' : '/login'}>

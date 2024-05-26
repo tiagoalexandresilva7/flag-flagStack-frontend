@@ -1,12 +1,12 @@
-import Hero from '../components/Hero';
-import LandingPage from '../components/LandingPage';
+import Hero from '../components/pages/Homepage/HomepageHero';
+import HomepageRandomHotels from '../components/pages/Homepage/HomepageRandomHotels';
 
 function HomepageView() {
     return (
         <>
             <main>
                 <Hero />
-                <LandingPage />
+                <HomepageRandomHotels />
             </main>
         </>
     );

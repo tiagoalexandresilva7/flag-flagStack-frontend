@@ -3,9 +3,8 @@ import { useEffect, useState } from 'react';
 import bookingService from '../../../../services/bookingService';
 import hotelService from '../../../../services/hotelService';
 
-function EditBooking({ user, bookingId }) {
-    console.log(bookingId);
-    const [booking, setBooking] = useState();
+function EditBooking({ user, booking }) {
+    const [bookingFormData, setBookingFormData] = useState();
     const [hotel, setHotel] = useState();
 
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -17,33 +16,24 @@ function EditBooking({ user, bookingId }) {
 
     useEffect(() => {
         (async () => {
-            const bookingToEdit = await bookingService.getBookingById(
-                user,
-                bookingId
-            );
-
-            setBooking({
-                ...bookingToEdit,
-                checkIn: new Date(bookingToEdit.checkIn)
-                    .toISOString()
-                    .slice(0, 10),
-                checkOut: new Date(bookingToEdit.checkIn)
-                    .toISOString()
-                    .slice(0, 10),
+            setBookingFormData({
+                ...booking,
+                checkIn: new Date(booking.checkIn).toISOString().slice(0, 10),
+                checkOut: new Date(booking.checkIn).toISOString().slice(0, 10),
             });
 
-            console.log(booking);
+            console.log(bookingFormData);
 
             const hotelInfo = await hotelService.getHotelById(
-                bookingToEdit.onHotel
+                booking.onHotel
             );
 
             setHotel(hotelInfo);
         })();
     }, []);
 
-    function bookingInputHandler(event) {
-        setBooking({
+    function inputHandler(event) {
+        setBookingFormData({
             ...booking,
             [event.target.name]: event.target.value,
         });
@@ -67,7 +57,7 @@ function EditBooking({ user, bookingId }) {
     return (
         <>
             {isFormSubmitted && <InfoModal infoModalText={infoModalText} />}
-            {booking && (
+            {bookingFormData && (
                 <dialog open>
                     <article>
                         <hgroup>
@@ -82,7 +72,9 @@ function EditBooking({ user, bookingId }) {
                                         type="date"
                                         name="bookedAt"
                                         aria-label="Booked At"
-                                        value={new Date(booking.createdAt)
+                                        value={new Date(
+                                            bookingFormData.createdAt
+                                        )
                                             .toISOString()
                                             .slice(0, 10)}
                                         disabled
@@ -97,11 +89,11 @@ function EditBooking({ user, bookingId }) {
                                         onKeyDown={() => {
                                             return false;
                                         }}
-                                        value={new Date(booking.checkIn)
+                                        value={new Date(bookingFormData.checkIn)
                                             .toISOString()
                                             .slice(0, 10)}
                                         onChange={(event) => {
-                                            bookingInputHandler(event);
+                                            inputHandler(event);
                                         }}
                                     />
                                 </label>
@@ -114,11 +106,13 @@ function EditBooking({ user, bookingId }) {
                                         onKeyDown={() => {
                                             return false;
                                         }}
-                                        value={new Date(booking.checkOut)
+                                        value={new Date(
+                                            bookingFormData.checkOut
+                                        )
                                             .toISOString()
                                             .slice(0, 10)}
                                         onChange={(event) => {
-                                            bookingInputHandler(event);
+                                            inputHandler(event);
                                         }}
                                     />
                                 </label>
@@ -128,16 +122,16 @@ function EditBooking({ user, bookingId }) {
                                         type="number"
                                         name="numberOfGuests"
                                         aria-label="Number of guests"
-                                        value={booking.numberOfGuests}
+                                        value={bookingFormData.numberOfGuests}
                                         onChange={(event) => {
-                                            bookingInputHandler(event);
+                                            inputHandler(event);
                                         }}
                                     />
                                 </label>
                                 <p>
                                     New total:{' '}
                                     <span className="font-bold text-xl">
-                                        {booking.pricePaid}€
+                                        {bookingFormData.pricePaid}€
                                     </span>{' '}
                                 </p>
                                 <button type="submit">Update</button>

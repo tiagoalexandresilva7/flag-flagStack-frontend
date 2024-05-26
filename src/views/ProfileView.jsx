@@ -1,15 +1,15 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 
 import authService from '../../services/authService';
 import userService from '../../services/userService';
 import bookingService from '../../services/bookingService';
 import hotelService from '../../services/hotelService';
-import LoadingSpinner from '../components/LoadingSpinner';
-import InfoModal from '../components/profile/InfoModal';
 
-import AccountSettings from '../components/profile/AccountSettings';
-import Bookings from '../components/profile/bookings/Bookings';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import ProfileAccountSettings from '../components/pages/Profile/ProfileAccountSettings';
+import ProfileBookingsTable from '../components/pages/Profile/ProfileBookingsTable';
+import ProfileHeading from '../components/pages/Profile/ProfileHeading';
 
 function ProfileView() {
     const [location, setLocation] = useLocation();
@@ -38,56 +38,10 @@ function ProfileView() {
             const userBookings = await bookingService.getBookingsByUserId(user);
             setBookings(userBookings.bookings);
             // todo pagination?
+
+            setIsLoading(false);
         })();
-
-        setIsLoading(false);
     }, []);
-
-    // const [formUserAccData, setFormUserAccData] = useState({
-    //     email: '',
-    //     currentPassword: '',
-    //     newPassword: '',
-    //     confirmNewPassword: '',
-    // });
-
-    // const accModal = useRef(null);
-    // const [modalTitle, setModalTitle] = useState(
-    //     'Your account has been updated!'
-    // );
-    // const [modalMessage, setModalMessage] = useState(
-    //     "The settings you've changed have been saved!"
-    // );
-
-    // const putBookingModal = useRef(null);
-    // const putBookingConfirmationModal = useRef(null);
-    // const [
-    //     putBookingConfirmationModalTitle,
-    //     setPutBookingConfirmationModalTitle,
-    // ] = useState('Your booking has been updated!');
-    // const [
-    //     putBookingConfirmationModalMessage,
-    //     setPutBookingConfirmationModalMessage,
-    // ] = useState("The new information you've provided has been saved!");
-
-    // const [booking, setBooking] = useState();
-    // const [bookingOldTotal, setBookingOldTotal] = useState();
-    // const [hotel, setHotel] = useState();
-
-    async function updateUserSubmitHandler(event) {
-        setIsLoading(true);
-        event.preventDefault();
-
-        const response = await userService.putUser(user, formUserAccData);
-
-        if (response.message) {
-            setModalTitle('Something went wrong!');
-            setModalMessage(response.message);
-        }
-
-        accModalHandler();
-
-        setIsLoading(false);
-    }
 
     async function getBookingInfo(id) {
         const booking = await bookingService.getBookingById(user, id);
@@ -159,14 +113,9 @@ function ProfileView() {
         return (
             <>
                 <section className="container mx-auto">
-                    <hgroup className="text-center">
-                        <h1>My profile</h1>
-                        <p>You can manage your account here!</p>
-                    </hgroup>
-                    {userData && (
-                        <AccountSettings user={user} userData={userData} />
-                    )}
-                    {bookings && <Bookings user={user} bookings={bookings} />}
+                    <ProfileHeading />
+                    <ProfileAccountSettings user={user} userData={userData} />
+                    <ProfileBookingsTable user={user} bookings={bookings} />
                 </section>
             </>
         );

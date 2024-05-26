@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-function InfoModal({ infoModalText }) {
+function InfoModal({ infoModalText, setInfoModalText }) {
     const infoModal = useRef(null);
 
     function infoModalHandler() {
