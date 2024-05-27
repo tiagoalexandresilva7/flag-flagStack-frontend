@@ -7,18 +7,18 @@ function InfoModal({ infoModalText, setInfoModalText }) {
         infoModal.current.toggleAttribute('open');
     }
 
+    alert('modal rendered')
+
     return (
-        <>
-            <dialog open ref={infoModal}>
-                <article>
-                    <h2>{infoModalText?.title}</h2>
-                    <p>{infoModalText?.message}</p>
-                    <footer>
-                        <button onClick={infoModalHandler}>OK</button>
-                    </footer>
-                </article>
-            </dialog>
-        </>
+        <dialog open className='z-10' ref={infoModal}>
+            <article>
+                <h2>{infoModalText?.title}</h2>
+                <p>{infoModalText?.message}</p>
+                <footer>
+                    <button onClick={infoModalHandler}>OK</button>
+                </footer>
+            </article>
+        </dialog>
     );
 }
 
