@@ -3,13 +3,13 @@ import { useLocation } from 'wouter';
 
 import authService from '../../services/authService';
 import userService from '../../services/userService';
-import bookingService from '../../services/bookingService';
 
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import ProfileAccountSettings from '../components/pages/Profile/ProfileAccountSettings';
-import ProfileBookingsTable from '../components/pages/Profile/ProfileBookingsTable';
-import ProfileHeading from '../components/pages/Profile/ProfileHeading';
-import ProfileBookings from '../components/pages/Profile/ProfileBookings';
+import AccountSettings from '../components/pages/Profile/AccountSettings/AccountSettings';
+import Heading from '../components/pages/Profile/ProfileHeading';
+import Bookings from '../components/pages/Profile/Bookings/Bookings';
+import Reviews from '../components/pages/Profile/Reviews/Reviews';
+import Logout from '../components/pages/Profile/Logout/Logout';
 
 function ProfileView() {
     const [location, setLocation] = useLocation();
@@ -17,7 +17,6 @@ function ProfileView() {
 
     const [user, setUser] = useState();
     const [userData, setUserData] = useState();
-    // const [bookings, setBookings] = useState();
 
     useEffect(() => {
         const user = authService.getUserToken();
@@ -32,16 +31,9 @@ function ProfileView() {
         (async () => {
             const userData = await userService.getUserById(user);
             setUserData(userData);
-            
+
             setIsLoading(false);
         })();
-
-        // (async () => {
-        //     const userBookings = await bookingService.getBookingsByUserId(user);
-        //     setBookings(userBookings.bookings);
-        //     // todo pagination?
-
-        // })();
     }, []);
 
     if (isLoading) {
@@ -49,11 +41,12 @@ function ProfileView() {
     } else {
         return (
             <>
-                <section className="container mx-auto">
-                    <ProfileHeading />
-                    <ProfileAccountSettings user={user} userData={userData} />
-                    {/* <ProfileBookingsTable user={user} bookings={bookings} /> */}
-                    <ProfileBookings user={user} /* bookings={bookings} */ />
+                <section className="container mx-auto min-h-screen text-center">
+                    <Heading />
+                    <AccountSettings user={user} userData={userData} />
+                    <Bookings user={user} />
+                    <Reviews user={user} />
+                    <Logout />
                 </section>
             </>
         );

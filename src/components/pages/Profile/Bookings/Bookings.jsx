@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 
-import bookingService from '../../../../services/bookingService';
+import bookingService from '../../../../../services/bookingService';
 
-import ProfileEditBooking from './ProfileEditBooking';
-import ProfileBookingsTable from './ProfileBookingsTable';
+import EditBooking from './EditBooking';
+import Table from './Table';
 
-function ProfileBookings({ user }) {
+function Bookings({ user }) {
     const [isLoading, setIsLoading] = useState(true);
 
     const [bookings, setBookings] = useState();
+
     const [editingBooking, setEditingBooking] = useState();
     const [isBookingUpdated, setIsBookingUpdated] = useState(false);
 
@@ -18,24 +19,34 @@ function ProfileBookings({ user }) {
         (async () => {
             const userBookings = await bookingService.getBookingsByUserId(user);
             setBookings(userBookings.bookings);
-            // todo pagination?
 
             setIsLoading(false);
         })();
     }, [isBookingUpdated]);
 
+    async function deleteBookingHandler(bookingId) {
+        const response = await bookingService.deleteBooking(user, bookingId);
+
+        if (!response) {
+            return;
+        }
+
+        setBookings(bookings.filter((booking) => booking._id !== bookingId));
+    }
+
     return (
         <details className="overflow-auto">
             <summary role="button">Bookings</summary>
 
-            <ProfileBookingsTable
+            <Table
                 bookings={bookings}
                 setEditingBooking={setEditingBooking}
                 setShowEditBookingForm={setShowEditBookingForm}
+                deleteBookingHandler={deleteBookingHandler}
             />
 
             {showEditBookingForm && (
-                <ProfileEditBooking
+                <EditBooking
                     user={user}
                     editingBooking={editingBooking}
                     setIsBookingUpdated={setIsBookingUpdated}
@@ -46,4 +57,4 @@ function ProfileBookings({ user }) {
     );
 }
 
-export default ProfileBookings;
+export default Bookings;

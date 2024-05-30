@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import InfoModal from '../../ui/InfoModal';
+import InfoModal from '../../../ui/InfoModal';
 
-import userService from '../../../../services/userService';
-import ProfileAccountSettingsUpdateForm from './ProfileAccountSettingsUpdateForm';
+import userService from '../../../../../services/userService';
+
+import UpdateForm from './UpdateForm';
 
 function ProfileAccountSettings({ user, userData }) {
     const [isLoading, setIsLoading] = useState(true);
 
     const [formUserAccData, setFormUserAccData] = useState({
         email: userData.email,
-        role: userData.role
+        role: userData.role,
     });
 
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -31,7 +32,7 @@ function ProfileAccountSettings({ user, userData }) {
                 message: response.message,
             });
         }
-        
+
         setIsFormSubmitted(true);
         setIsLoading(false);
     }
@@ -41,7 +42,7 @@ function ProfileAccountSettings({ user, userData }) {
             <details>
                 {isFormSubmitted && <InfoModal infoModalText={infoModalText} />}
                 <summary role="button">Account settings</summary>
-                <ProfileAccountSettingsUpdateForm
+                <UpdateForm
                     formUserAccData={formUserAccData}
                     setFormUserAccData={setFormUserAccData}
                     formSubmitHandler={formSubmitHandler}

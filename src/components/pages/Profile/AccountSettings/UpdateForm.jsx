@@ -1,4 +1,4 @@
-function ProfileAccountSettingsUpdateForm({
+function UpdateForm({
     formUserAccData,
     setFormUserAccData,
     formSubmitHandler,
@@ -60,4 +60,4 @@ function ProfileAccountSettingsUpdateForm({
     );
 }
 
-export default ProfileAccountSettingsUpdateForm;
+export default UpdateForm;

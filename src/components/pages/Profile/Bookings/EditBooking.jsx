@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import bookingService from '../../../../services/bookingService';
-import hotelService from '../../../../services/hotelService';
+import bookingService from '../../../../../services/bookingService';
+import hotelService from '../../../../../services/hotelService';
 
-import InfoModal from '../../ui/InfoModal';
-import ProfileEditBookingForm from './ProfileEditBookingForm';
+import EditBookingForm from './EditBookingForm';
 
-function ProfileEditBooking({
+function EditBooking({
     user,
     editingBooking,
     setShowEditBookingForm,
@@ -22,13 +21,6 @@ function ProfileEditBooking({
     });
 
     const [hotel, setHotel] = useState();
-
-    const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-
-    const [infoModalText, setInfoModalText] = useState({
-        title: 'Your booking has been updated!',
-        message: "The new info you've provided has been saved!",
-    });
 
     useEffect(() => {
         (async () => {
@@ -68,38 +60,24 @@ function ProfileEditBooking({
 
     async function formSubmitHandler(event) {
         setIsBookingUpdated(false);
+
         event.preventDefault();
 
         const response = await bookingService.putBooking(user, bookingFormData);
-
-        if (response.message) {
-            setInfoModalText({
-                title: 'Something went wrong!',
-                message: response.message,
-            });
-        }
-
-        setIsFormSubmitted(true);
-        setShowEditBookingForm(false);
-        setIsBookingUpdated(true);
-
-        // console.log(isFormSubmitted);
     }
 
     return (
         <>
             {bookingFormData && (
-                <ProfileEditBookingForm
+                <EditBookingForm
                     bookingFormData={bookingFormData}
                     setBookingFormData={setBookingFormData}
                     formSubmitHandler={formSubmitHandler}
                     setShowEditBookingForm={setShowEditBookingForm}
                 />
             )}
-            {isFormSubmitted && <InfoModal infoModalText={infoModalText} />}
-            {/* <InfoModal infoModalText={infoModalText} /> */}
         </>
     );
 }
 
-export default ProfileEditBooking;
+export default EditBooking;

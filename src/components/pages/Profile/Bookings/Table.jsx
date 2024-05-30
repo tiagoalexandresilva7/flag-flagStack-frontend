@@ -1,8 +1,11 @@
-function ProfileBookingsTable({
+function Table({
     bookings,
     setEditingBooking,
     setShowEditBookingForm,
+    deleteBookingHandler
 }) {
+
+    
     function editButtonHandler(booking) {
         setEditingBooking(booking);
         setShowEditBookingForm(true);
@@ -41,7 +44,11 @@ function ProfileBookingsTable({
                                 >
                                     <i className="fa-solid fa-pen text-white"></i>
                                 </button>
-                                <button>
+                                <button
+                                    onClick={() => {
+                                        deleteBookingHandler(booking._id);
+                                    }}
+                                >
                                     <i className="fa-solid fa-xmark text-white"></i>
                                 </button>
                             </td>
@@ -52,4 +59,4 @@ function ProfileBookingsTable({
     );
 }
 
-export default ProfileBookingsTable;
+export default Table;

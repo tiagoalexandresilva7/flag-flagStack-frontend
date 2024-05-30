@@ -1,5 +1,5 @@
 async function getHotelById(id) {
-    const url = `http://localhost:3000/hotels/${id}`;
+    const url = `${import.meta.env.VITE_BASE_URL}/hotels/${id}`;
     const response = await fetch(url);
     const result = await response.json();
 
@@ -9,7 +9,7 @@ async function getHotelById(id) {
 async function getHotelsBySearchParams(page, searchParams) {
     const { lowestPrice, highestPrice, nameOrCity } = searchParams;
 
-    let url = `http://localhost:3000/hotels?page=${page}`;
+    let url = `${import.meta.env.VITE_BASE_URL}/hotels?page=${page}`;
 
     if (lowestPrice && highestPrice) {
         url = url + `&byPrice=${lowestPrice}&byPrice=${highestPrice}`;
@@ -26,7 +26,7 @@ async function getHotelsBySearchParams(page, searchParams) {
 }
 
 async function getRandomHotels() {
-    const url = 'http://localhost:3000/hotels?byRandom=true';
+    const url = `${import.meta.env.VITE_BASE_URL}/hotels?byRandom=true`;
     const response = await fetch(url);
     const result = await response.json();
 

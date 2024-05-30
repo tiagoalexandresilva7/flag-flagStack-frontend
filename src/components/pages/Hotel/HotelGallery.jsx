@@ -4,7 +4,7 @@ function HotelGallery({ hotelName, photos }) {
             {photos?.map((photo, index) => (
                 <img
                     className="w-full h-full"
-                    src={photo}
+                    src={`${import.meta.env.VITE_BASE_URL}/${photo}`}
                     key={index}
                     alt={`${hotelName} photo ${index + 1}`}
                 />

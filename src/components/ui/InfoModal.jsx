@@ -7,8 +7,6 @@ function InfoModal({ infoModalText, setInfoModalText }) {
         infoModal.current.toggleAttribute('open');
     }
 
-    alert('modal rendered')
-
     return (
         <dialog open className='z-10' ref={infoModal}>
             <article>

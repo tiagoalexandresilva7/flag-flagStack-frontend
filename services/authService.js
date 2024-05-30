@@ -12,7 +12,7 @@ async function loginUser(user) {
         },
     };
 
-    const url = 'http://localhost:3000/auth';
+    const url = `${import.meta.env.VITE_BASE_URL}/auth`;
     const response = await fetch(url, options);
     const result = await response.json();
 
@@ -29,9 +29,23 @@ function getUserToken() {
     return token;
 }
 
+function logoutUser() {
+    const userConfirmation = confirm('Are you sure you want to logout?');
+
+    if (!userConfirmation) {
+        return;
+    }
+
+    localStorage.removeItem('user');
+
+    alert('Logged out successfully! Redirecting to homepage!');
+
+    return true;
+}
 
 export default {
     loginUser,
+    logoutUser,
     setUserToken,
     getUserToken,
 };

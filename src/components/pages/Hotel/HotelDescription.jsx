@@ -16,24 +16,7 @@ function HotelDescription({ hotel }) {
                     </hgroup>
                 </section>
             </section>
-            <p>
-                {/* {hotel.description} */}
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                Laudantium veritatis facilis reiciendis, minus voluptate labore
-                molestias amet, dolorem unde doloribus perferendis maxime,
-                consectetur ut rem. Fugiat itaque rem consequatur. Dolor. Lorem,
-                ipsum dolor sit amet consectetur adipisicing elit. Nihil quis
-                quidem perspiciatis laboriosam expedita aut rem! Reiciendis fuga
-                quo possimus tempore quod nesciunt qui animi aperiam, asperiores
-                vitae culpa ipsum? Lorem ipsum, dolor sit amet consectetur
-                adipisicing elit. Laudantium veritatis facilis reiciendis, minus
-                voluptate labore molestias amet, dolorem unde doloribus
-                perferendis maxime, consectetur ut rem. Fugiat itaque rem
-                consequatur. Dolor. Lorem, ipsum dolor sit amet consectetur
-                adipisicing elit. Nihil quis quidem perspiciatis laboriosam
-                expedita aut rem! Reiciendis fuga quo possimus tempore quod
-                nesciunt qui animi aperiam, asperiores vitae culpa ipsum?
-            </p>
+            <p>{hotel.description}</p>
         </section>
     );
 }

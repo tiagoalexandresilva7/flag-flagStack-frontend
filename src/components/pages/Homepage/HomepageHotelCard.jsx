@@ -5,7 +5,12 @@ function HomepageHotelCard({ hotel }) {
         <article>
             <header>
                 <figure>
-                    <img src={hotel.photos[0]} alt={hotel.name} />
+                    <img
+                        src={`${import.meta.env.VITE_BASE_URL}/${
+                            hotel.photos[0]
+                        }`}
+                        alt={hotel.name}
+                    />
                 </figure>
             </header>
             <section className="h-48">

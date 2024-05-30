@@ -5,7 +5,7 @@ async function getBookingById(user, bookingId) {
         },
     };
 
-    const url = `http://localhost:3000/bookings/${bookingId}`;
+    const url = `${import.meta.env.VITE_BASE_URL}/bookings/${bookingId}`;
     const response = await fetch(url, options);
     const result = await response.json();
 
@@ -19,7 +19,7 @@ async function getBookingsByUserId(user) {
         },
     };
 
-    const url = `http://localhost:3000/bookings?byUser=${user.id}`;
+    const url = `${import.meta.env.VITE_BASE_URL}/bookings?byUser=${user.id}`;
     const response = await fetch(url, options);
     const result = await response.json();
 
@@ -54,15 +54,23 @@ async function postBooking(user, bookingData) {
         },
     };
 
-    const url = 'http://localhost:3000/bookings';
+    const url = `${import.meta.env.VITE_BASE_URL}/bookings`;
     const response = await fetch(url, options);
     const result = await response.json();
 
-    return result
+    return result;
 }
 
 async function putBooking(user, bookingData) {
     const { _id, ...updatedBookingData } = bookingData;
+
+    const userConfirmation = confirm(
+        'Are you sure you want to edit this booking?'
+    );
+
+    if (!userConfirmation) {
+        return;
+    }
 
     const options = {
         method: 'PUT',
@@ -73,11 +81,47 @@ async function putBooking(user, bookingData) {
         },
     };
 
-    const url = `http://localhost:3000/bookings/${_id}`;
+    const url = `${import.meta.env.VITE_BASE_URL}/bookings/${_id}`;
     const response = await fetch(url, options);
     const result = await response.json();
 
+    if (result.message) {
+        alert(`Something went wrong: ${result.message}`);
+        return
+    } else {
+        alert(`Booking with ID ${_id} edited successfully!`);
+    }
+
     return result;
+}
+
+async function deleteBooking(user, id) {
+    const userConfirmation = confirm(
+        'Are you sure you want to delete this booking? This is irreversible!'
+    );
+
+    if (!userConfirmation) {
+        return;
+    }
+
+    const options = {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${user.token}`,
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    };
+
+    const url = `${import.meta.env.VITE_BASE_URL}/bookings/${id}`;
+    const response = await fetch(url, options);
+    const result = await response.json();
+
+    if (result.deletedCount === 1) {
+        alert(`Booking with ID ${id} deleted!`);
+        return result.deletedCount;
+    } else {
+        return alert(`Something went wrong: ${result.message}`);
+    }
 }
 
 export default {
@@ -86,4 +130,5 @@ export default {
     getTotalPrice,
     postBooking,
     putBooking,
+    deleteBooking,
 };

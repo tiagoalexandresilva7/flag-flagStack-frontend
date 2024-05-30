@@ -1,14 +1,48 @@
-function ProfileEditBookingForm({
+function EditBookingForm({
     bookingFormData,
     setBookingFormData,
     formSubmitHandler,
     setShowEditBookingForm,
 }) {
     function inputHandler(event) {
-        setBookingFormData({
-            ...bookingFormData,
-            [event.target.name]: event.target.value,
-        });
+        if (event.target.name === 'checkIn') {
+            if (new Date(event.target.value) < new Date()) {
+                return;
+            }
+
+            setBookingFormData({
+                ...bookingFormData,
+                [event.target.name]: new Date(event.target.value)
+                    .toISOString()
+                    .slice(0, 10),
+            });
+        }
+
+        if (event.target.name === 'checkOut') {
+            if (
+                new Date(event.target.value) < new Date(bookingFormData.checkIn)
+            ) {
+                return;
+            }
+
+            setBookingFormData({
+                ...bookingFormData,
+                [event.target.name]: new Date(event.target.value)
+                    .toISOString()
+                    .slice(0, 10),
+            });
+        }
+
+        if (event.target.name === 'numberOfGuests') {
+            if (event.target.value < 1) {
+                return;
+            }
+
+            setBookingFormData({
+                ...bookingFormData,
+                [event.target.name]: event.target.value,
+            });
+        }
     }
 
     return (
@@ -83,7 +117,7 @@ function ProfileEditBookingForm({
                 </section>
                 <footer>
                     <button onClick={() => setShowEditBookingForm(false)}>
-                        Cancel
+                        Close
                     </button>
                 </footer>
             </article>
@@ -91,4 +125,4 @@ function ProfileEditBookingForm({
     );
 }
 
-export default ProfileEditBookingForm;
+export default EditBookingForm;

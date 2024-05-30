@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import authService from '../../../services/authService';
 
 function Navbar() {
+    const location = useLocation();
     const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
     useEffect(() => {
@@ -13,7 +14,7 @@ function Navbar() {
         }
 
         setIsUserLoggedIn(true);
-    }, []);
+    }, [location]);
 
     return (
         <header>

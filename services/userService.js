@@ -5,7 +5,7 @@ async function getUserById(user) {
         },
     };
 
-    const url = `http://localhost:3000/users/${user.id}`;
+    const url = `${import.meta.env.VITE_BASE_URL}/users/${user.id}`;
     const response = await fetch(url, options);
     const result = await response.json();
 
@@ -21,7 +21,7 @@ async function postUser(user) {
         },
     };
 
-    const url = 'http://localhost:3000/users';
+    const url = `${import.meta.env.VITE_BASE_URL}/users`;
     const response = await fetch(url, options);
     const result = await response.json();
 
@@ -38,7 +38,7 @@ async function putUser(user, userData) {
         },
     };
 
-    const url = `http://localhost:3000/users/${user.id}`;
+    const url = `${import.meta.env.VITE_BASE_URL}/users/${user.id}`;
     const response = await fetch(url, options);
     const result = await response.json();
 
