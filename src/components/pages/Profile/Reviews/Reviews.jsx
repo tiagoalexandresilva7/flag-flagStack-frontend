@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import reviewService from '../../../../../services/reviewService';
 
-import ProfileReviewsEditForm from './Form/EditForm';
+import EditForm from './Form/EditForm';
 import Card from './Card';
 
 function Reviews({ user }) {
@@ -79,7 +79,7 @@ function Reviews({ user }) {
                     ))}
             </ul>
             {editReview && (
-                <ProfileReviewsEditForm
+                <EditForm
                     review={editReview}
                     handleEditReview={(event) => handleEditReview(event)}
                     handleEditReviewFormSubmit={(event) =>
